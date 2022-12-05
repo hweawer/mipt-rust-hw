@@ -1,4 +1,5 @@
 [workspace]
 members = [
     "borrowing/context",
-    "intro/combinations"]
+    "intro/combinations",
+    "intro/conway"]
