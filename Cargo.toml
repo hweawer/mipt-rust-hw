@@ -2,4 +2,5 @@
 members = [
     "borrowing/context",
     "intro/combinations",
-    "intro/conway"]
+    "intro/conway",
+    "intro/min-queue"]
