@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "borrowing/context",
+    "borrowing/pstack",
     "intro/combinations",
     "intro/conway",
     "intro/min-queue"]
