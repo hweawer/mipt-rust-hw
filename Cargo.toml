@@ -2,6 +2,7 @@
 members = [
     "borrowing/context",
     "borrowing/pstack",
+    "borrowing/bst",
     "intro/combinations",
     "intro/conway",
     "intro/min-queue"]
