@@ -4,6 +4,7 @@ members = [
     "borrowing/pstack",
     "borrowing/bst",
     "std-collections/comm",
+    "std-collections/lru-cache",
     "intro/combinations",
     "intro/conway",
     "intro/min-queue"]
