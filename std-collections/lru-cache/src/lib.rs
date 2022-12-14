@@ -1,5 +1,4 @@
 #![forbid(unsafe_code)]
-
 #![feature(map_first_last)]
 
 use std::collections::{BTreeMap, HashMap, VecDeque};

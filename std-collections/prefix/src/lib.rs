@@ -8,7 +8,10 @@ pub fn longest_common_prefix(strs: Vec<&str>) -> String {
         String::new()
     } else {
         let potential = strs[0].clone();
-        let mut iters = strs.into_iter().map(|x| x.char_indices()).collect::<Vec<_>>();
+        let mut iters = strs
+            .into_iter()
+            .map(|x| x.char_indices())
+            .collect::<Vec<_>>();
         for _ in 0..min_len {
             let mut cur = &mut iters[0].next().unwrap().clone();
             for s in &mut iters[1..] {

@@ -16,7 +16,10 @@ pub struct BstSet {
 
 impl BstSet {
     pub fn new() -> Self {
-        Self { root: None, size: 0 }
+        Self {
+            root: None,
+            size: 0,
+        }
     }
 
     pub fn len(&self) -> usize {
@@ -67,8 +70,9 @@ impl BstSet {
                         (None, None) => *cur = None,
                         (Some(_), None) => *cur = node.left_ptr.take(),
                         (None, Some(_)) => *cur = node.right_ptr.take(),
-                        (Some(_), Some(_)) =>
+                        (Some(_), Some(_)) => {
                             node.key = BstSet::delete_min(&mut node.right_ptr).unwrap().key
+                        }
                     };
                     self.size -= 1;
                     return true;
