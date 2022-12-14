@@ -47,40 +47,40 @@ impl<K: Ord, V> FlatMap<K, V> {
         res
     }
 
-    pub fn get<Q: ?Sized>(&self, k: &Q) -> Option<&V>
+    pub fn get<Q>(&self, k: &Q) -> Option<&V>
     where
         K: Borrow<Q>,
-        Q: Eq,
+        Q: Ord + ?Sized,
     {
         self.0
-            .iter()
-            .find(|(key, _)| key.borrow() == k)
-            .map(|(_, v)| v)
+            .binary_search_by(|pair| pair.0.borrow().cmp(k))
+            .ok()
+            .and_then(|idx| self.0.get(idx).map(|(_, v)| v))
     }
 
-    pub fn remove<Q: ?Sized>(&mut self, key: &Q) -> Option<V>
+    pub fn remove<Q>(&mut self, key: &Q) -> Option<V>
     where
         K: Borrow<Q>,
-        Q: Eq,
+        Q: Ord + ?Sized,
     {
         self.remove_entry(key).map(|(_, v)| v)
     }
 
-    pub fn remove_entry<Q: ?Sized>(&mut self, key: &Q) -> Option<(K, V)>
+    pub fn remove_entry<Q>(&mut self, key: &Q) -> Option<(K, V)>
     where
         K: Borrow<Q>,
-        Q: Eq,
+        Q: Ord + ?Sized,
     {
         self.0
-            .iter()
-            .position(|(k, _)| k.borrow() == key)
+            .binary_search_by(|pair| pair.0.borrow().cmp(key))
+            .ok()
             .map(|idx| self.0.remove(idx))
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-impl<K: Ord + Borrow<Q>, V, Q: ?Sized + Eq> Index<&Q> for FlatMap<K, V> {
+impl<K: Ord + Borrow<Q>, V, Q: ?Sized + Ord> Index<&Q> for FlatMap<K, V> {
     type Output = V;
 
     fn index(&self, index: &Q) -> &Self::Output {
