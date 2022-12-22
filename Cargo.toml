@@ -8,4 +8,8 @@ members = [
     "std-collections/prefix",
     "intro/combinations",
     "intro/conway",
-    "intro/min-queue", "traits/flatmap", "traits/itertools", "traits/mpsc"]
+    "intro/min-queue",
+    "traits/flatmap",
+    "traits/itertools",
+    "traits/mpsc",
+    "traits/trust"]
