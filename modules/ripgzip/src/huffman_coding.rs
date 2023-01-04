@@ -27,11 +27,14 @@ pub fn decode_litlen_distance_trees<T: BufRead>(
     let distances_rows = (bit_reader.read_bits(5)?.bits() + 1) as usize;
     debug!("Number of distance codes (1-32) {}", distances_rows);
 
-    let v = bit_reader.read_bits(4)?.bits() + 4;
-    debug!("Number of code length codes used (4-19) {}", v);
+    let code_length_codes_number = bit_reader.read_bits(4)?.bits() + 4;
+    debug!(
+        "Number of code length codes used (4-19) {}",
+        code_length_codes_number
+    );
 
     let mut lengths = [0u8; 19];
-    for i in 0 as usize..v as usize {
+    for i in 0 as usize..code_length_codes_number as usize {
         lengths[i] = bit_reader.read_bits(3)?.bits() as u8;
     }
     let mut swapped_lengths = [0u8; 19];
@@ -129,7 +132,7 @@ impl TryFrom<HuffmanCodeWord> for TreeCodeToken {
                 extra_bits: 7,
             })
         } else {
-            Err(anyhow!(""))
+            Err(anyhow!("Unknown value for TreeCodeToken: {}", value.0))
         }
     }
 }
@@ -207,6 +210,7 @@ pub struct DistanceToken {
 impl TryFrom<HuffmanCodeWord> for DistanceToken {
     type Error = anyhow::Error;
 
+    // todo: make a table on a compile time
     fn try_from(value: HuffmanCodeWord) -> Result<Self> {
         assert!(value.0 <= 29);
         if value.0 <= 3 {
@@ -335,15 +339,15 @@ where
         for e in code_lengths {
             let key = *e;
             if key > 0 {
-                let mut x = *bl_count.entry(key).or_insert(0) + 1;
-                bl_count.insert(key, x);
+                let mut lower_border_for_len = *bl_count.entry(key).or_insert(0) + 1;
+                bl_count.insert(key, lower_border_for_len);
             }
         }
         let mut next_code = [0u16; MAX_BITS + 1];
         let mut code = 0;
         for bits in 1..=MAX_BITS {
             code = (code + bl_count.get(&(bits as u8 - 1)).unwrap_or(&0)) << 1;
-            next_code[bits] = code.clone();
+            next_code[bits] = code;
         }
         let mut result = HashMap::new();
         for i in 0..code_lengths.len() {

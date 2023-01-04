@@ -185,19 +185,15 @@ impl<T: BufRead> GzipReader<T> {
     }
 
     fn inner(mut self) -> Result<(MemberHeader, MemberReader<T>)> {
-        let mut header_digest = Digest::new(crc32::IEEE);
         let mut byte = self.reader.read_u8()?;
-        header_digest.write(&[byte]);
         if byte != ID1 {
             return Err(anyhow!("wrong id values"));
         }
         byte = self.reader.read_u8()?;
-        header_digest.write(&[byte]);
         if byte != ID2 {
             return Err(anyhow!("wrong id values"));
         }
         byte = self.reader.read_u8()?;
-        header_digest.write(&[byte]);
         let compression_method = CompressionMethod::from(byte);
         match compression_method {
             CompressionMethod::Unknown(_) => {
@@ -206,7 +202,6 @@ impl<T: BufRead> GzipReader<T> {
             CompressionMethod::Deflate => {}
         }
         byte = self.reader.read_u8()?;
-        header_digest.write(&[byte]);
 
         let is_text = byte >> FTEXT_OFFSET & 1 == 1;
         let has_crc = byte >> FHCRC_OFFSET & 1 == 1;
@@ -215,20 +210,16 @@ impl<T: BufRead> GzipReader<T> {
         let is_fcomment = byte >> FCOMMENT_OFFSET & 1 == 1;
 
         let modification_time = self.reader.read_u32::<LittleEndian>()?;
-        header_digest.write(&modification_time.to_le_bytes());
         let extra_flags = self.reader.read_u8()?;
         let os = self.reader.read_u8()?;
-        header_digest.write(&[extra_flags, os]);
         let mut extra = None;
         if is_fextra {
             let xlen = self.reader.read_u16::<LittleEndian>()?;
-            header_digest.write(&xlen.to_le_bytes());
             let mut temp = Vec::with_capacity(xlen as usize);
             for _ in 0..xlen {
                 let byte = self.reader.read_u8()?;
                 temp.push(byte);
             }
-            header_digest.write(&temp);
             extra = Some(temp);
         }
         let mut name = None;
@@ -239,7 +230,6 @@ impl<T: BufRead> GzipReader<T> {
                 buffer.push(byte);
                 byte = self.reader.read_u8()?;
             }
-            header_digest.write(&buffer);
             name = Some(String::from_utf8(buffer)?);
         }
         let mut comment = None;
@@ -250,15 +240,7 @@ impl<T: BufRead> GzipReader<T> {
                 buffer.push(byte);
                 byte = self.reader.read_u8()?;
             }
-            header_digest.write(&buffer);
             comment = Some(String::from_utf8(buffer)?);
-        }
-        if has_crc {
-            let crc_32 = header_digest.sum32() as u16;
-            let crc_16 = self.reader.read_u16::<LittleEndian>()?;
-            if crc_32 != crc_16 {
-                return Err(anyhow!("header crc16 check failed"));
-            }
         }
 
         let member_header = MemberHeader {
@@ -272,8 +254,14 @@ impl<T: BufRead> GzipReader<T> {
             has_crc,
             is_text,
         };
-        let reader = MemberReader { inner: self.reader };
-        Ok((member_header, reader))
+
+        if has_crc {
+            let crc_16 = self.reader.read_u16::<LittleEndian>()?;
+            if member_header.crc16() != crc_16 {
+                return Err(anyhow!("header crc16 check failed"));
+            }
+        }
+        Ok((member_header, MemberReader { inner: self.reader }))
     }
 }
 

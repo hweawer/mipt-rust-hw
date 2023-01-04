@@ -22,14 +22,14 @@ pub struct TrackingWriter<T> {
 impl<T: Write> Write for TrackingWriter<T> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         let res = self.inner.write(buf)?;
-        let slice: &[u8] = &buf[0..res];
-        for e in slice {
+        let slice_to_write = &buf[0..res];
+        for e in slice_to_write {
             if self.history.len() == HISTORY_SIZE {
                 self.history.pop_front();
             }
             self.history.push_back(*e);
         }
-        <Digest as Hasher32>::write(&mut self.digest, slice);
+        <Digest as Hasher32>::write(&mut self.digest, slice_to_write);
         self.len += res;
         Ok(res)
     }

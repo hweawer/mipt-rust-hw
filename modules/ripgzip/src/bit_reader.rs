@@ -37,22 +37,19 @@ impl BitSequence {
             self.len + other.len() <= 16,
             "Concatenation result of two bit sequences is larger than 16"
         );
+        let bits;
+        let len;
         if self.len == 0 {
-            Self {
-                bits: other.bits,
-                len: other.len,
-            }
+            bits = other.bits;
+            len = other.len;
         } else if other.len == 0 {
-            Self {
-                bits: self.bits,
-                len: self.len,
-            }
+            bits = self.bits;
+            len = self.len;
         } else {
-            Self {
-                bits: self.bits << other.len | other.bits(),
-                len: self.len + other.len,
-            }
+            bits = self.bits << other.len | other.bits();
+            len = self.len + other.len;
         }
+        Self { bits, len }
     }
 }
 

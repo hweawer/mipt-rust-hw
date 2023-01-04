@@ -17,11 +17,6 @@ mod errors {
     use super::*;
 
     #[test]
-    fn idk() {
-        check_decompression_error(include_bytes!("../data/ok/10-header-crc16.gz"), "a");
-    }
-
-    #[test]
     fn length_check_error() {
         check_decompression_error(
             include_bytes!("../data/corrupted/00-bad-length.gz"),

@@ -40,17 +40,11 @@ pub fn compress<R: BufRead, W: Write>(_input: R, _output: W) -> Result<()> {
 ////////////////////////////////////////////////////////////////////////////////
 
 pub fn decompress<R: BufRead, W: Write>(input: R, mut output: W) -> Result<()> {
-    let test: &[u8] = &[
-        0x1fu8, 0x8bu8, 0x08u8, 0x00u8, 0x00u8, 0x00u8, 0x00u8, 0x00u8, 0x00u8, 0x03u8, 0x1du8,
-        0xc6u8, 0x49u8, 0x01u8, 0x00u8, 0x00u8, 0x10u8, 0x40u8, 0xc0u8, 0xacu8, 0xa3u8, 0x7fu8,
-        0x88u8, 0x3du8, 0x3cu8, 0x20u8, 0x2au8, 0x97u8, 0x9du8, 0x37u8, 0x5eu8, 0x1du8, 0x0cu8,
-        0x6eu8, 0x29u8, 0x34u8, 0x94u8, 0x23u8, 0x00u8, 0x00u8, 0x00u8,
-    ];
     let mut gzip_reader = GzipReader::new(input);
     let mut tracking_writer = TrackingWriter::new(output);
     while let Some(member) = gzip_reader.next_member() {
-        let (_, mut y) = member?;
-        let mut reader = DeflateReader::new(BitReader::new(y.inner_mut()));
+        let (_, mut member_reader) = member?;
+        let mut reader = DeflateReader::new(BitReader::new(member_reader.inner_mut()));
         while let Some(block) = reader.next_block() {
             let (header, mut r) = block?;
             match header.compression_type {
@@ -92,7 +86,7 @@ pub fn decompress<R: BufRead, W: Write>(input: R, mut output: W) -> Result<()> {
                 break;
             }
         }
-        let (footer, new_gzip_reader) = y.read_footer()?;
+        let (footer, new_gzip_reader) = member_reader.read_footer()?;
         if footer.data_size as usize != tracking_writer.byte_count() {
             return Err(anyhow!("length check failed"));
         }
