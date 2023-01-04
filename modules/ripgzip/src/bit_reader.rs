@@ -1,9 +1,7 @@
 use byteorder::ReadBytesExt;
-#[cfg(not(test))]
-use log::debug;
+
 use std::cmp::min;
 use std::{
-    fmt,
     io::{self, BufRead},
 };
 
@@ -91,7 +89,7 @@ impl<T: BufRead> BitReader<T> {
                 self.bit_reader_buffer.buffer = new_buffer;
                 self.bit_reader_buffer.len = 8 - shift;
             } else {
-                shift = min(self.bit_reader_buffer.len.clone(), shift);
+                shift = min(self.bit_reader_buffer.len, shift);
                 save = self.bit_reader_buffer.buffer & MASK >> (8 - shift);
 
                 let new_buffer = self.bit_reader_buffer.buffer >> shift;

@@ -1,8 +1,8 @@
 use std::io::BufRead;
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result};
 
-use crate::bit_reader::{BitReader, BitSequence};
+use crate::bit_reader::{BitReader};
 use crate::CompressionType::{DynamicTree, FixedTree, Reserved, Uncompressed};
 
 ////////////////////////////////////////////////////////////////////////////////

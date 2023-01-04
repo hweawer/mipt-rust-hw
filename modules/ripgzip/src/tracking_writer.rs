@@ -1,10 +1,9 @@
 use std::cmp::min;
 use std::collections::VecDeque;
-use std::hash::Hasher;
 use std::io::{self, Write};
 
 use anyhow::{bail, Result};
-use byteorder::WriteBytesExt;
+
 use crc::crc32::Digest;
 use crc::{crc32, Hasher32};
 

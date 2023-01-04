@@ -1,8 +1,8 @@
-use std::io::{self, BufRead};
+use std::io::{BufRead};
 
-use anyhow::{anyhow, bail, Context, Result};
+use anyhow::{anyhow, Result};
 use byteorder::{LittleEndian, ReadBytesExt};
-use crc::crc32::Digest;
+
 use crc::{crc32, Hasher32};
 
 ////////////////////////////////////////////////////////////////////////////////

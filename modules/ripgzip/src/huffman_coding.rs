@@ -1,10 +1,9 @@
 use std::fmt::Debug;
-use std::{collections::HashMap, convert::TryFrom, fmt, io::BufRead};
+use std::{collections::HashMap, convert::TryFrom, io::BufRead};
 
-use anyhow::{anyhow, bail, Result};
+use anyhow::{anyhow, Result};
 #[cfg(not(test))]
 use log::debug;
-use log::*;
 
 #[cfg(test)]
 use std::println as debug;
@@ -34,8 +33,8 @@ pub fn decode_litlen_distance_trees<T: BufRead>(
     );
 
     let mut lengths = [0u8; 19];
-    for i in 0 as usize..code_length_codes_number as usize {
-        lengths[i] = bit_reader.read_bits(3)?.bits() as u8;
+    for len in lengths.iter_mut().take(code_length_codes_number as usize) {
+        *len = bit_reader.read_bits(3)?.bits() as u8;
     }
     let mut swapped_lengths = [0u8; 19];
     swapped_lengths[16] = lengths[0];
@@ -315,10 +314,6 @@ impl<T> HuffmanCoding<T>
 where
     T: Copy + TryFrom<HuffmanCodeWord, Error = anyhow::Error> + Debug,
 {
-    pub fn new(map: HashMap<BitSequence, T>) -> Self {
-        Self { map }
-    }
-
     pub fn decode_symbol(&self, seq: BitSequence) -> Option<T> {
         self.map.get(&seq).cloned()
     }
@@ -339,7 +334,7 @@ where
         for e in code_lengths {
             let key = *e;
             if key > 0 {
-                let mut lower_border_for_len = *bl_count.entry(key).or_insert(0) + 1;
+                let lower_border_for_len = *bl_count.entry(key).or_insert(0) + 1;
                 bl_count.insert(key, lower_border_for_len);
             }
         }
@@ -350,10 +345,10 @@ where
             next_code[bits] = code;
         }
         let mut result = HashMap::new();
-        for i in 0..code_lengths.len() {
-            let len = code_lengths[i];
+        for (i, len) in code_lengths.iter().enumerate() {
+            let len = *len as usize;
             if len > 0 {
-                let seq = BitSequence::new(next_code[len as usize], len);
+                let seq = BitSequence::new(next_code[len], len as u8);
                 let elem = T::try_from(HuffmanCodeWord(i as u16))?;
                 result.insert(seq, elem);
                 next_code[len as usize] += 1;

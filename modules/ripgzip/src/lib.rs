@@ -3,13 +3,13 @@
 
 extern crate core;
 
-use std::io;
-use std::io::{BufRead, Read, Write};
+
+use std::io::{BufRead, Write};
 
 use anyhow::{anyhow, Result};
-use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 
-use crate::huffman_coding::TreeCodeToken;
+
+
 use bit_reader::BitReader;
 use deflate::{CompressionType, DeflateReader};
 use gzip::GzipReader;
@@ -17,9 +17,8 @@ use huffman_coding::{decode_litlen_distance_trees, LitLenToken};
 use log::*;
 use tracking_writer::TrackingWriter;
 
-#[cfg(not(test))]
-use log::debug;
-use log::*;
+
+
 
 #[cfg(test)]
 use std::println as debug;
@@ -39,14 +38,14 @@ pub fn compress<R: BufRead, W: Write>(_input: R, _output: W) -> Result<()> {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pub fn decompress<R: BufRead, W: Write>(input: R, mut output: W) -> Result<()> {
+pub fn decompress<R: BufRead, W: Write>(input: R, output: W) -> Result<()> {
     let mut gzip_reader = GzipReader::new(input);
     let mut tracking_writer = TrackingWriter::new(output);
     while let Some(member) = gzip_reader.next_member() {
         let (_, mut member_reader) = member?;
         let mut reader = DeflateReader::new(BitReader::new(member_reader.inner_mut()));
         while let Some(block) = reader.next_block() {
-            let (header, mut r) = block?;
+            let (header, r) = block?;
             match header.compression_type {
                 CompressionType::Uncompressed => {
                     let _ = r.borrow_reader_from_boundary();
