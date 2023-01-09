@@ -13,4 +13,5 @@ members = [
     "traits/itertools",
     "traits/mpsc",
     "traits/trust",
-    "modules/ripgzip"]
+    "modules/ripgzip",
+    "modules/trie"]
