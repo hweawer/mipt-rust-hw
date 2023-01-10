@@ -14,4 +14,5 @@ members = [
     "traits/mpsc",
     "traits/trust",
     "modules/ripgzip",
-    "modules/trie"]
+    "modules/trie",
+    "parallel/threadpool"]
