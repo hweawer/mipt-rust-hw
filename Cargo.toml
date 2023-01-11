@@ -15,4 +15,5 @@ members = [
     "traits/trust",
     "modules/ripgzip",
     "modules/trie",
-    "parallel/threadpool"]
+    "parallel/threadpool",
+    "parallel/pargrep"]
