@@ -17,4 +17,5 @@ members = [
     "modules/trie",
     "parallel/threadpool",
     "parallel/pargrep",
-    "parallel/tcp_proxy"]
+    "parallel/tcp_proxy",
+    "async/crawler"]
