@@ -16,4 +16,5 @@ members = [
     "modules/ripgzip",
     "modules/trie",
     "parallel/threadpool",
-    "parallel/pargrep"]
+    "parallel/pargrep",
+    "parallel/tcp_proxy"]
