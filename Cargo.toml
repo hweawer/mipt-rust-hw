@@ -18,4 +18,5 @@ members = [
     "parallel/threadpool",
     "parallel/pargrep",
     "parallel/tcp_proxy",
-    "async/crawler"]
+    "async/crawler",
+    "async/babencoin"]

@@ -1,7 +1,7 @@
 #![forbid(unsafe_code)]
 
 use std::io::{BufReader, BufWriter};
-use std::net::{TcpListener, TcpStream};
+use std::net::{Shutdown, TcpListener, TcpStream};
 
 use log::info;
 use std::io::prelude::*;
@@ -16,17 +16,15 @@ pub fn run_proxy(port: u32, destination: String) {
     let server_host_port = format!("127.0.0.1:{}", port);
     info!("Server destination : {}", server_host_port);
     let server = TcpListener::bind(server_host_port).expect("Can't start proxy.");
-    loop {
-        for stream in server.incoming() {
-            info!("Connection came");
-            let stream = stream.expect("Connection failed");
-            let client_stream = Arc::new(stream);
-            let proxy_stream = Arc::new(
-                TcpStream::connect(&client_host_port).expect("Can't connect to the destination."),
-            );
-            let _ = handle_duplex_channel(Arc::clone(&proxy_stream), Arc::clone(&client_stream));
-            let _ = handle_duplex_channel(Arc::clone(&client_stream), Arc::clone(&proxy_stream));
-        }
+    for stream in server.incoming() {
+        info!("Connection came");
+        let stream = stream.expect("Connection failed");
+        let client_stream = Arc::new(stream);
+        let proxy_stream = Arc::new(
+            TcpStream::connect(&client_host_port).expect("Can't connect to the destination."),
+        );
+        let _ = handle_duplex_channel(Arc::clone(&proxy_stream), Arc::clone(&client_stream));
+        let _ = handle_duplex_channel(Arc::clone(&client_stream), Arc::clone(&proxy_stream));
     }
 }
 

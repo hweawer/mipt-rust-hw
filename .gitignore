@@ -6,3 +6,4 @@ dump.gz
 **/.DS_Store
 .idea
 .vscode
+async/babencoin/test_artifacts
