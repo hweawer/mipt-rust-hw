@@ -3,12 +3,9 @@
 
 extern crate core;
 
-
 use std::io::{BufRead, Write};
 
 use anyhow::{anyhow, Result};
-
-
 
 use bit_reader::BitReader;
 use deflate::{CompressionType, DeflateReader};
@@ -16,9 +13,6 @@ use gzip::GzipReader;
 use huffman_coding::{decode_litlen_distance_trees, LitLenToken};
 use log::*;
 use tracking_writer::TrackingWriter;
-
-
-
 
 #[cfg(test)]
 use std::println as debug;
