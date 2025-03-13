@@ -90,6 +90,7 @@ impl<T: Write> TrackingWriter<T> {
 
 #[cfg(test)]
 mod tests {
+    use byteorder::WriteBytesExt;
     use super::*;
 
     #[test]

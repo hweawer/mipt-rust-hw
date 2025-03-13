@@ -1,7 +1,7 @@
 #![feature(generic_associated_types)]
 
 use ntest::timeout;
-use rand::{distributions::Alphanumeric, Rng};
+use rand::{distr::Alphanumeric, Rng};
 use std::borrow::Borrow;
 use std::collections::{hash_map::Entry::*, HashMap};
 use trie::{trie::Trie, trie_key::ToKeyIter};

@@ -1,6 +1,6 @@
 use ntest::timeout;
 use prefix::longest_common_prefix;
-use rand::{distributions::Alphanumeric, Rng};
+use rand::{distr::Alphanumeric, Rng};
 
 #[test]
 fn empty_vec() {
